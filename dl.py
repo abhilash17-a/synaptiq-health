@@ -43,7 +43,7 @@ class MentalHealthPredictor:
     def load_saved_model(self):
         print("\nLoading pre-trained model and preprocessors...")
         self.tabnet_model = TabNetClassifier()
-        self.tabnet_model.load_model(self.model_path + ".zip")
+        self.tabnet_model.load_model(self.model_path)
         
         with open(self.preprocessors_path, 'rb') as f:
             preprocessors = pickle.load(f)
