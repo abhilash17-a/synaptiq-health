@@ -1,0 +1,6 @@
+Flask
+pytorch-tabnet
+pandas
+scikit-learn
+torch
+gunicorn

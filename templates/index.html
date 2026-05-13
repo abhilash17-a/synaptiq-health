@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Synaptiq Health</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --bg: #070b11;
+            --card: #0d1119;
+            --accent: #1da1f2;
+            --text: #ffffff;
+            --muted: #9ca3af;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                linear-gradient(to right, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.6)),
+                url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1600&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at top right,
+                    rgba(29, 161, 242, 0.12),
+                    transparent 30%);
+            pointer-events: none;
+        }
+
+        .main-container {
+            width: 100%;
+            min-height: 100vh;
+            padding: 40px 60px;
+            backdrop-filter: blur(2px);
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+        }
+
+        .nav-left {
+            display: flex;
+            gap: 35px;
+        }
+
+        .nav-left a {
+            text-decoration: none;
+            color: #d1d5db;
+            font-size: 14px;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .nav-left a:hover {
+            color: var(--accent);
+        }
+
+        .nav-right {
+            color: #cbd5e1;
+            font-size: 13px;
+        }
+
+        /* HERO */
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            min-height: 75vh;
+        }
+
+        .hero-left {
+            max-width: 620px;
+        }
+
+        .small-title {
+            color: #cbd5e1;
+            font-size: 18px;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+        }
+
+        .main-title {
+            font-size: 72px;
+            line-height: 0.95;
+            font-weight: 700;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+        }
+
+        .main-title span {
+            color: var(--accent);
+        }
+
+        .hero-desc {
+            color: #9ca3af;
+            line-height: 1.8;
+            margin-bottom: 35px;
+            max-width: 520px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 40px;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            transition: 0.35s;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border: none;
+            box-shadow: 0 0 25px rgba(29, 161, 242, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+        }
+
+        /* FORM CARD */
+
+        .form-card {
+            background: rgba(8, 12, 18, 0.78);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 35px;
+            backdrop-filter: blur(14px);
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 22px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            font-size: 13px;
+            color: #d1d5db;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 15px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(29, 161, 242, 0.12);
+        }
+
+        /* REAL-TIME VALIDATION STYLING */
+        input:not(:placeholder-shown):invalid {
+            border-color: #ef4444 !important;
+            background: rgba(239, 68, 68, 0.05);
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+        }
+
+        .error-msg {
+            display: none;
+            color: #f87171;
+            font-size: 11px;
+            margin-top: -5px;
+            margin-left: 5px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        input:not(:placeholder-shown):invalid~.error-msg {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* WELLNESS REPORT */
+        #wellness-report {
+            display: none;
+            margin-top: 60px;
+            padding: 50px;
+            background: #fff;
+            color: #1e293b;
+            border-radius: 20px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.6s ease;
+        }
+
+        .report-header {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .report-section {
+            margin-bottom: 25px;
+        }
+
+        .report-section h4 {
+            color: #64748b;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .report-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .report-status-badge {
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .btn-print {
+            background: #1da1f2;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #wellness-report,
+            #wellness-report * {
+                visibility: visible;
+            }
+
+            #wellness-report {
+                position: absolute;
+                left: 0;
+                top: 0;
+                margin: 0;
+                box-shadow: none;
+                width: 100%;
+            }
+
+            .btn-print {
+                display: none;
+            }
+        }
+
+        /* FOOTER */
+        footer {
+            margin-top: 100px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 60px 20px 30px;
+            color: #9ca3af;
+        }
+
+        .footer-section {
+            text-align: center;
+        }
+
+        .footer-section.left {
+            text-align: left;
+        }
+
+        .footer-section.right {
+            text-align: right;
+        }
+
+        .footer-section h4 {
+            color: #fff;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .footer-section p {
+            font-size: 13px;
+            line-height: 1.8;
+            margin-bottom: 8px;
+        }
+
+        .team-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .team-list li {
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .copyright {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            font-size: 11px;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .team-list,
+            .faculty-info {
+                text-align: center;
+            }
+        }
+
+        select option {
+            background: #0f172a;
+        }
+
+        .submit-btn {
+            width: 100%;
+            margin-top: 30px;
+            padding: 18px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(90deg, #0ea5e9, #2563eb);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.35s;
+            letter-spacing: 1px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.35);
+        }
+
+        /* RESULT */
+
+        #result-container {
+            margin-top: 40px;
+            display: none;
+            animation: fadeUp 0.5s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 35px;
+            backdrop-filter: blur(10px);
+        }
+
+        .prediction-badge {
+            display: inline-block;
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+            font-weight: 600;
+        }
+
+        .status-worst {
+            background: rgba(255, 0, 0, 0.12);
+            color: #ff7b7b;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+
+        .status-good {
+            background: rgba(255, 166, 0, 0.12);
+            color: #ffd36c;
+            border: 1px solid rgba(255, 166, 0, 0.3);
+        }
+
+        .status-better {
+            background: rgba(0, 255, 132, 0.12);
+            color: #7dffb5;
+            border: 1px solid rgba(0, 255, 132, 0.3);
+        }
+
+        .status-poor {
+            background: rgba(29, 161, 242, 0.12);
+            color: #7ecbff;
+            border: 1px solid rgba(29, 161, 242, 0.3);
+        }
+
+        #prediction-text {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .recommendations {
+            margin-top: 35px;
+        }
+
+        .recommendations h3 {
+            margin-bottom: 18px;
+            color: var(--accent);
+            font-size: 22px;
+        }
+
+        .recommendations ul {
+            list-style: none;
+        }
+
+        .recommendations li {
+            padding: 15px 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            margin-bottom: 12px;
+            color: #d1d5db;
+            border-left: 3px solid var(--accent);
+        }
+
+        .what-if {
+            margin-top: 35px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+        }
+
+        #what-if-card {
+            margin-top: 15px;
+            background: rgba(29, 161, 242, 0.08) !important;
+            border: 1px solid rgba(29, 161, 242, 0.2) !important;
+            padding: 24px !important;
+            border-radius: 18px !important;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--accent);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 18px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media(max-width:1100px) {
+
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .main-title {
+                font-size: 56px;
+            }
+
+        }
+
+        @media(max-width:700px) {
+
+            .main-container {
+                padding: 25px;
+            }
+
+            .navbar {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+
+            .nav-left {
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+
+            .main-title {
+                font-size: 42px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .form-card {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="overlay"></div>
+
+    <div class="main-container">
+
+        <!-- NAVBAR -->
+
+        <div class="navbar">
+            <div class="nav-left">
+                <a href="#">Home</a>
+                <a href="javascript:void(0)" id="nav-reports">Reports</a>
+            </div>
+
+            <div class="nav-right">
+                AI Digital Wellness System
+            </div>
+        </div>
+
+        <!-- HERO -->
+
+        <div class="hero">
+
+            <div class="hero-left">
+
+                <div class="small-title">
+                    Digital Distraction & Health Impact
+
+                </div>
+
+                <h1 class="main-title">
+                    Synaptiq <span>Health</span>
+                </h1>
+
+                <p class="hero-desc">
+                    Analyze your digital habits, stress patterns, sleep cycle,
+                    screen exposure, and lifestyle metrics using AI-driven
+                    predictive analytics for smarter mental wellness insights.
+                </p>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" id="ai-analysis-btn">
+                        AI Analysis
+                    </button>
+
+                    <button class="btn" id="wellness-report-btn">
+                        Wellness Report
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- FORM -->
+
+            <div class="form-card">
+
+                <form id="predictor-form">
+
+                    <div class="form-grid">
+
+                        <div class="input-group">
+                            <label>Age</label>
+                            <input type="number" name="Age" placeholder="Enter age" required min="1" max="120">
+                            <span class="error-msg">Limit: 1 - 120</span>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Gender</label>
+                            <select name="Gender" required>
+                                {% for opt in options.Gender %}
+                                <option value="{{opt}}">{{opt}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Tech Usage (Hrs)</label>
+                            <input type="number" step="0.1" name="Technology_Usage_Hours" placeholder="Daily hrs"
+                                required min="0" max="24">
+                            <span class="error-msg">Limit: 0 - 24</span>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Social Media</label>
+                            <input type="number" step="0.1" name="Social_Media_Usage_Hours" placeholder="Daily hrs"
+                                required min="0" max="24">
+                            <span class="error-msg">Limit: 0 - 24</span>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Gaming</label>
+                            <input type="number" step="0.1" name="Gaming_Hours" placeholder="Daily hrs" required min="0"
+                                max="24">
+                            <span class="error-msg">Limit: 0 - 24</span>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Screen Time</label>
+                            <input type="number" step="0.1" name="Screen_Time_Hours" placeholder="Daily hrs" required
+                                min="0" max="24">
+                            <span class="error-msg">Limit: 0 - 24</span>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Stress Level</label>
+                            <select name="Stress_Level" required>
+                                {% for opt in options.Stress_Level %}
+                                <option value="{{opt}}">{{opt}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Sleep</label>
+                            <input type="number" step="0.1" name="Sleep_Hours" placeholder="Hours" required min="0"
+                                max="24">
+                            <span class="error-msg">Limit: 0 - 24</span>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Physical Activity</label>
+                            <input type="number" step="0.1" name="Physical_Activity_Hours" placeholder="Daily hrs"
+                                required min="0" max="24">
+                            <span class="error-msg">Limit: 0 - 24</span>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Support Systems</label>
+                            <select name="Support_Systems_Access" required>
+                                {% for opt in options.Support_Systems_Access %}
+                                <option value="{{opt}}">{{opt}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Work Environment</label>
+                            <select name="Work_Environment_Impact" required>
+                                {% for opt in options.Work_Environment_Impact %}
+                                <option value="{{opt}}">{{opt}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Online Support</label>
+                            <select name="Online_Support_Usage" required>
+                                {% for opt in options.Online_Support_Usage %}
+                                <option value="{{opt}}">{{opt}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        ANALYZE MY WELL-BEING
+                    </button>
+
+                </form>
+
+                <!-- LOADER -->
+
+                <div class="loading" id="loader">
+                    <div class="spinner"></div>
+                    <p>AI is processing your data...</p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- RESULT SECTION (SEPARATED) -->
+    <div id="result-container" style="display: none; max-width: 1200px; margin: 60px auto 0;">
+        <div class="result-card">
+            <div style="text-align:center; margin-bottom: 30px;">
+                <span id="prediction-badge" class="prediction-badge"></span>
+                <h2 id="prediction-text"></h2>
+            </div>
+
+            <div class="recommendations">
+                <h3>Improvement Recommendations</h3>
+                <ul id="recommendations-list"></ul>
+            </div>
+
+            <div class="what-if">
+                <p
+                    style="color:#9ca3af; margin-bottom:12px; font-size: 14px; text-transform: none; letter-spacing: 0.5px;">
+                    If you follow the suggestions then it changes to
+                </p>
+                <div id="what-if-card">
+                    <span id="what-if-badge" class="prediction-badge">
+                        Target Status
+                    </span>
+                    <h3 id="what-if-text" style="font-size:32px; color:var(--accent);">
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISUAL ANALYSIS SECTION (SEPARATED) -->
+    <div id="visual-container" style="display: none; max-width: 1200px; margin: 60px auto 0;">
+        <div class="result-card" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            <div
+                style="background: rgba(255,255,255,0.03); padding: 30px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05);">
+                <h4
+                    style="font-size: 14px; color: #9ca3af; margin-bottom: 25px; text-align: center; letter-spacing: 2px; text-transform: uppercase;">
+                    Usage Distribution</h4>
+                <canvas id="usageChart" height="300"></canvas>
+            </div>
+            <div
+                style="background: rgba(255,255,255,0.03); padding: 30px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05);">
+                <h4
+                    style="font-size: 14px; color: #9ca3af; margin-bottom: 25px; text-align: center; letter-spacing: 2px; text-transform: uppercase;">
+                    Habit Comparison</h4>
+                <canvas id="habitChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- WELLNESS REPORT SECTION (HIDDEN BY DEFAULT) -->
+    <div id="wellness-report">
+        <div class="report-header">
+            <div>
+                <h2 style="font-size: 28px; color: #0f172a;">Wellness Summary Report</h2>
+                <p style="color: #64748b; font-size: 14px;">Generated by Synaptiq AI • <span id="report-date"></span>
+                </p>
+            </div>
+            <div id="report-status" class="report-status-badge"></div>
+        </div>
+
+        <div class="report-grid">
+            <div class="report-section">
+                <h4>User Profile</h4>
+                <p class="report-value"><span id="rep-age"></span> Yrs • <span id="rep-gender"></span></p>
+            </div>
+            <div class="report-section">
+                <h4>Current Status</h4>
+                <p class="report-value" id="rep-status-text" style="color: #1da1f2;"></p>
+            </div>
+        </div>
+
+        <div class="report-grid">
+            <div class="report-section">
+                <h4>Digital Usage</h4>
+                <p style="font-size: 14px;">Tech Usage: <strong id="rep-tech"></strong>h</p>
+                <p style="font-size: 14px;">Social Media: <strong id="rep-social"></strong>h</p>
+                <p style="font-size: 14px;">Total Screen: <strong id="rep-screen"></strong>h</p>
+            </div>
+            <div class="report-section">
+                <h4>Lifestyle Factors</h4>
+                <p style="font-size: 14px;">Sleep: <strong id="rep-sleep"></strong>h</p>
+                <p style="font-size: 14px;">Physical Activity: <strong id="rep-activity"></strong>h</p>
+                <p style="font-size: 14px;">Stress Level: <strong id="rep-stress"></strong></p>
+            </div>
+        </div>
+
+        <div class="report-section"
+            style="background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 4px solid #1da1f2;">
+            <h4>AI Recommendations</h4>
+            <ul id="rep-recs" style="padding-left: 20px; font-size: 14px; line-height: 1.6;"></ul>
+        </div>
+
+        <div class="report-section" style="margin-top: 30px; text-align: center;">
+            <p style="font-style: italic; color: #64748b; font-size: 13px;">
+                "By following these suggestions, your wellness status is predicted to improve to <strong
+                    id="rep-what-if" style="color: #059669;"></strong>."
+            </p>
+        </div>
+
+        <div style="text-align: right;">
+            <button class="btn-print" onclick="window.print()">Download as PDF</button>
+        </div>
+    </div>
+
+    </div>
+
+    <script>
+        let lastAnalysis = null;
+        let usageChartInstance = null;
+        let habitChartInstance = null;
+
+        function updateCharts(data) {
+            // Usage Distribution Pie Chart
+            const usageCtx = document.getElementById('usageChart').getContext('2d');
+            if (usageChartInstance) usageChartInstance.destroy();
+
+            usageChartInstance = new Chart(usageCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tech Usage', 'Social Media', 'Gaming'],
+                    datasets: [{
+                        data: [
+                            parseFloat(data.Technology_Usage_Hours),
+                            parseFloat(data.Social_Media_Usage_Hours),
+                            parseFloat(data.Gaming_Hours)
+                        ],
+                        backgroundColor: ['#1da1f2', '#818cf8', '#22d3ee'],
+                        borderWidth: 0,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#9ca3af', font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // Habit Comparison Bar Chart with Thresholds
+            const habitCtx = document.getElementById('habitChart').getContext('2d');
+            if (habitChartInstance) habitChartInstance.destroy();
+
+            const habits = [
+                { label: 'Sleep', value: parseFloat(data.Sleep_Hours), good: 7, bad: 5, inverse: false },
+                { label: 'Screen', value: parseFloat(data.Screen_Time_Hours), good: 5, bad: 8, inverse: true },
+                { label: 'Activity', value: parseFloat(data.Physical_Activity_Hours), good: 1.5, bad: 0.5, inverse: false },
+                { label: 'Social', value: parseFloat(data.Social_Media_Usage_Hours), good: 2, bad: 4, inverse: true }
+            ];
+
+            const colors = habits.map(h => {
+                if (h.inverse) { // Lower is better (Screen, Social)
+                    if (h.value <= h.good) return '#22c55e'; // Green
+                    if (h.value <= h.bad) return '#f59e0b'; // Yellow
+                    return '#ef4444'; // Red
+                } else { // Higher is better (Sleep, Activity)
+                    if (h.value >= h.good) return '#22c55e'; // Green
+                    if (h.value >= h.bad) return '#f59e0b'; // Yellow
+                    return '#ef4444'; // Red
+                }
+            });
+
+            habitChartInstance = new Chart(habitCtx, {
+                type: 'bar',
+                data: {
+                    labels: habits.map(h => h.label),
+                    datasets: [{
+                        label: 'Current Status (Green=Good, Yellow=Fair, Red=Poor)',
+                        data: habits.map(h => h.value),
+                        backgroundColor: colors,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    scales: {
+                        x: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af' } },
+                        y: { grid: { display: false }, ticks: { color: '#9ca3af' } }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        document.getElementById('predictor-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('wellness-report').style.display = 'none';
+            document.getElementById('visual-container').style.display = 'none';
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    lastAnalysis = { ...result, inputs: data };
+
+                    const badge = document.getElementById('prediction-badge');
+                    badge.textContent = 'Mental Health Status';
+                    badge.className = 'prediction-badge status-' + result.prediction.toLowerCase();
+
+                    document.getElementById('prediction-text').textContent = result.prediction;
+
+                    const list = document.getElementById('recommendations-list');
+                    list.innerHTML = '';
+
+                    if (result.recommendations.length === 0) {
+                        list.innerHTML = '<li>Keep it up! Your habits are excellent.</li>';
+                    } else {
+                        result.recommendations.forEach(rec => {
+                            const li = document.createElement('li');
+                            li.textContent = rec;
+                            list.appendChild(li);
+                        });
+                    }
+
+                    const whatIfBadge = document.getElementById('what-if-badge');
+
+                    whatIfBadge.className =
+                        'prediction-badge status-' +
+                        result.what_if.toLowerCase();
+
+                    document.getElementById('what-if-text').textContent =
+                        result.what_if;
+
+                    document.getElementById('result-container').style.display =
+                        'block';
+
+                    // Smooth scroll to results
+                    window.scrollTo({ top: document.getElementById('result-container').offsetTop - 50, behavior: 'smooth' });
+
+                } else {
+                    alert('Error: ' + result.error);
+                }
+
+            } catch (err) {
+                alert('Connection error. Please ensure the server is running.');
+            } finally {
+                document.getElementById('loader').style.display = 'none';
+            }
+        });
+
+        document.getElementById('ai-analysis-btn').addEventListener('click', () => {
+            if (!lastAnalysis) {
+                alert('Please run an analysis by clicking "ANALYZE MY WELL-BEING" first.');
+                return;
+            }
+
+            const visualContainer = document.getElementById('visual-container');
+            visualContainer.style.display = 'grid';
+
+            updateCharts(lastAnalysis.inputs);
+
+            // Smooth scroll to charts
+            window.scrollTo({ top: visualContainer.offsetTop - 50, behavior: 'smooth' });
+        });
+
+        function generateWellnessReport() {
+            if (!lastAnalysis) {
+                alert('Please run an AI Analysis first to generate your report.');
+                return;
+            }
+
+            // Populate Report
+            document.getElementById('report-date').textContent = new Date().toLocaleDateString('en-US', {
+                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+
+            document.getElementById('rep-age').textContent = lastAnalysis.inputs.Age;
+            document.getElementById('rep-gender').textContent = lastAnalysis.inputs.Gender;
+            document.getElementById('rep-status-text').textContent = lastAnalysis.prediction;
+            document.getElementById('rep-tech').textContent = lastAnalysis.inputs.Technology_Usage_Hours;
+            document.getElementById('rep-social').textContent = lastAnalysis.inputs.Social_Media_Usage_Hours;
+            document.getElementById('rep-screen').textContent = lastAnalysis.inputs.Screen_Time_Hours;
+            document.getElementById('rep-sleep').textContent = lastAnalysis.inputs.Sleep_Hours;
+            document.getElementById('rep-activity').textContent = lastAnalysis.inputs.Physical_Activity_Hours;
+            document.getElementById('rep-stress').textContent = lastAnalysis.inputs.Stress_Level;
+
+            // Status Badge in Report
+            const repStatus = document.getElementById('report-status');
+            repStatus.textContent = lastAnalysis.prediction;
+            repStatus.className = 'report-status-badge status-' + lastAnalysis.prediction.toLowerCase();
+
+            // Recommendations in Report
+            const repRecsList = document.getElementById('rep-recs');
+            repRecsList.innerHTML = '';
+            if (lastAnalysis.recommendations.length === 0) {
+                repRecsList.innerHTML = '<li>Maintains balanced digital habits. No critical issues identified.</li>';
+            } else {
+                lastAnalysis.recommendations.forEach(rec => {
+                    const li = document.createElement('li');
+                    li.textContent = rec;
+                    repRecsList.appendChild(li);
+                });
+            }
+
+            document.getElementById('rep-what-if').textContent = lastAnalysis.what_if;
+
+            // Show Report
+            const reportDiv = document.getElementById('wellness-report');
+            reportDiv.style.display = 'block';
+
+            // Scroll to report
+            window.scrollTo({ top: reportDiv.offsetTop - 50, behavior: 'smooth' });
+        }
+
+        document.getElementById('wellness-report-btn').addEventListener('click', generateWellnessReport);
+        document.getElementById('nav-reports').addEventListener('click', generateWellnessReport);
+    </script>
+
+    <footer>
+        <div class="footer-container" style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px;">
+            <!-- TEAM MEMBERS -->
+            <div class="footer-section left">
+                <h4>Team Members</h4>
+                <ul class="team-list">
+                    <li><strong>Abhilash A</strong> - 4VV23CI002</li>
+                    <li><strong>Akash J</strong> - 4VV23CI004</li>
+                    <li><strong>Darshan IC</strong> - 4VV23CI014</li>
+                    <li><strong>Nishchith CY</strong> - 4VV23CI063</li>
+                </ul>
+            </div>
+
+            <!-- COLLEGE INFO -->
+            <div class="footer-section">
+                <h4>Institution</h4>
+                <p style="color: #fff; font-weight: 600;">Vidyavardhaka College of Engineering</p>
+                <p>P.B. No.206, Gokulam III Stage, Mysuru - 570 002, Karnataka, INDIA.</p>
+            </div>
+
+            <!-- FACULTY INFO -->
+            <div class="footer-section right">
+                <h4>Submitted To</h4>
+                <p style="color: #fff; font-weight: 600;">DR. SONALI</p>
+                <p>Asst Prof<br>Dept of AIML</p>
+            </div>
+        </div>
+
+        <div class="copyright">
+            2026 @ copyrights still not received
+        </div>
+    </footer>
+
+</body>
+
+</html>
