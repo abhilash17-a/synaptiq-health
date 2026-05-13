@@ -9,10 +9,12 @@ from pytorch_tabnet.tab_model import TabNetClassifier
 
 class MentalHealthPredictor:
     def __init__(self, dataset_path=None, model_dir="saved_model"):
+        # Use absolute path for robustness in production
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        self.model_dir = os.path.join(base_dir, model_dir)
         self.dataset_path = dataset_path
-        self.model_dir = model_dir
-        self.model_path = os.path.join(model_dir, "tabnet_model")
-        self.preprocessors_path = os.path.join(model_dir, "preprocessors.pkl")
+        self.model_path = os.path.join(self.model_dir, "tabnet_model")
+        self.preprocessors_path = os.path.join(self.model_dir, "preprocessors.pkl")
         
         self.class_mapping = {
             'Poor': 'Worst',
@@ -41,9 +43,21 @@ class MentalHealthPredictor:
             self.train_and_save()
 
     def load_saved_model(self):
-        print("\nLoading pre-trained model and preprocessors...")
+        print(f"\nAttempting to load model from: {self.model_path}")
         self.tabnet_model = TabNetClassifier()
-        self.tabnet_model.load_model(self.model_path)
+        
+        # Explicitly check for the zip file to avoid extension confusion
+        zip_path = self.model_path if self.model_path.endswith('.zip') else self.model_path + '.zip'
+        
+        if os.path.exists(zip_path):
+            # TabNet's load_model usually expects the path WITHOUT .zip
+            # but if it fails, we try with it.
+            try:
+                self.tabnet_model.load_model(self.model_path.replace('.zip', ''))
+            except:
+                self.tabnet_model.load_model(zip_path)
+        else:
+            raise FileNotFoundError(f"Model file not found at {zip_path}")
         
         with open(self.preprocessors_path, 'rb') as f:
             preprocessors = pickle.load(f)
