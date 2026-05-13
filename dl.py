@@ -72,7 +72,14 @@ class MentalHealthPredictor:
                     df = pd.read_csv(self.dataset_path)
                     self.features = [col for col in df.columns if col not in ['User_ID', 'Mental_Health_Status']]
                 else:
-                    raise FileNotFoundError("Missing 'features' in preprocessors.pkl and dataset_path is unavailable.")
+                    # Hardcoded fallback for production if dataset is missing
+                    print("Using hardcoded feature list fallback...")
+                    self.features = [
+                        'Age', 'Gender', 'Technology_Usage_Hours', 'Social_Media_Usage_Hours',
+                        'Gaming_Hours', 'Screen_Time_Hours', 'Stress_Level', 'Sleep_Hours',
+                        'Physical_Activity_Hours', 'Support_Systems_Access', 
+                        'Work_Environment_Impact', 'Online_Support_Usage'
+                    ]
         print("Model loaded successfully!")
 
     def train_and_save(self):
